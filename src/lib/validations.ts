@@ -67,7 +67,7 @@ export const bookingSchema = customerSchema.extend({
 
 // Helper to format Zod errors into a user-friendly message
 export function formatZodError(error: z.ZodError): string {
-  const firstError = error.errors[0];
+  const firstError = error.issues[0];
   if (firstError) {
     return firstError.message;
   }
@@ -77,7 +77,7 @@ export function formatZodError(error: z.ZodError): string {
 // Helper to format all Zod errors as a record
 export function formatZodErrors(error: z.ZodError): Record<string, string> {
   const errors: Record<string, string> = {};
-  for (const err of error.errors) {
+  for (const err of error.issues) {
     const path = err.path.join('.');
     if (!errors[path]) {
       errors[path] = err.message;
