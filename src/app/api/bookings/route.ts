@@ -23,8 +23,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check for required environment variables
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('Missing Supabase environment variables');
+      return NextResponse.json(
+        { error: 'Server configuration error: Supabase not configured' },
+        { status: 500 }
+      );
+    }
+
     // Calculate estimated total
-    const pickupDeliveryFee = Number(process.env.PICKUP_DELIVERY_FEE || 10);
+    const pickupDeliveryFee = Number(process.env.PICKUP_DELIVERY_FEE || 15);
     const includesPickup = requiresPickupDelivery(body.service_type);
     const bagTotal = body.bag_count * PRICE_PER_BAG;
     const estimatedTotal = bagTotal + (includesPickup ? pickupDeliveryFee : 0);
@@ -60,13 +69,21 @@ export async function POST(request: NextRequest) {
     if (dbError) {
       console.error('Database error:', dbError);
       return NextResponse.json(
-        { error: 'Failed to create booking' },
+        { error: `Database error: ${dbError.message}` },
         { status: 500 }
       );
     }
 
     // If paying with Stripe, create checkout session
     if (body.payment_method === 'stripe') {
+      if (!process.env.STRIPE_SECRET_KEY) {
+        console.error('Missing Stripe secret key');
+        return NextResponse.json(
+          { error: 'Server configuration error: Stripe not configured' },
+          { status: 500 }
+        );
+      }
+
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
       const session = await stripe.checkout.sessions.create({
@@ -124,8 +141,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ booking });
   } catch (error) {
     console.error('Booking error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
     return NextResponse.json(
-      { error: 'An unexpected error occurred' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

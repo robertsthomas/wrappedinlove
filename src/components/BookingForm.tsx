@@ -21,8 +21,10 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 
-import type { BookingFormSubmission, ServiceType, TimeWindow, PaymentMethod } from '@/types/booking';
+import { useCreateBooking, useValidateAddress } from '@/hooks/useBookings';
+import type { ServiceType, TimeWindow, PaymentMethod } from '@/types/booking';
 import { SERVICE_TYPE_LABELS, TIME_WINDOW_LABELS } from '@/types/booking';
+import { customerSchema, addressSchema, formatZodErrors } from '@/lib/validations';
 
 const PRICE_PER_BAG = 35;
 const BOOKING_WINDOW_START = 1;
@@ -34,7 +36,8 @@ interface FormErrors {
 
 export function BookingForm() {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const createBooking = useCreateBooking();
+  const validateAddress = useValidateAddress();
   const [errors, setErrors] = useState<FormErrors>({});
 
   // Form state
@@ -79,43 +82,50 @@ export function BookingForm() {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!customerName.trim()) {
-      newErrors.customerName = 'Name is required';
+    // Validate customer info with Zod
+    const customerResult = customerSchema.safeParse({
+      customer_name: customerName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+    });
+
+    if (!customerResult.success) {
+      const zodErrors = formatZodErrors(customerResult.error);
+      // Map Zod field names to form field names
+      if (zodErrors.customer_name) newErrors.customerName = zodErrors.customer_name;
+      if (zodErrors.email) newErrors.email = zodErrors.email;
+      if (zodErrors.phone) newErrors.phone = zodErrors.phone;
     }
 
-    if (!email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
-
-    if (!phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^[\d\s\-\(\)\+]{10,}$/.test(phone.replace(/\s/g, ''))) {
-      newErrors.phone = 'Please enter a valid phone number';
-    }
-
+    // Validate address with Zod if required
     if (requiresAddress) {
-      if (!addressLine1.trim()) {
-        newErrors.addressLine1 = 'Address is required for this service type';
-      }
-      if (!city.trim()) {
-        newErrors.city = 'City is required';
-      }
-      if (!state.trim()) {
-        newErrors.state = 'State is required';
-      }
-      if (!zip.trim()) {
-        newErrors.zip = 'ZIP code is required';
+      const addressResult = addressSchema.safeParse({
+        street: addressLine1.trim(),
+        city: city.trim(),
+        state: state.trim(),
+        zip: zip.trim(),
+      });
+
+      if (!addressResult.success) {
+        const zodErrors = formatZodErrors(addressResult.error);
+        // Map Zod field names to form field names
+        if (zodErrors.street) newErrors.addressLine1 = zodErrors.street;
+        if (zodErrors.city) newErrors.city = zodErrors.city;
+        if (zodErrors.state) newErrors.state = zodErrors.state;
+        if (zodErrors.zip) newErrors.zip = zodErrors.zip;
       }
     }
 
+    // Date validation
     if (!date) {
       newErrors.date = 'Please select a date';
     }
 
+    // Bag count validation
     if (bagCount < 1) {
       newErrors.bagCount = 'At least 1 bag is required';
+    } else if (bagCount > 100) {
+      newErrors.bagCount = 'Maximum 100 bags per booking';
     }
 
     setErrors(newErrors);
@@ -130,50 +140,78 @@ export function BookingForm() {
       return;
     }
 
-    setIsSubmitting(true);
+    // If address is required, validate it first
+    if (requiresAddress && addressLine1.trim() && city.trim() && state.trim() && zip.trim()) {
+      validateAddress.mutate(
+        {
+          street: addressLine1.trim(),
+          city: city.trim(),
+          state: state.trim(),
+          zip: zip.trim(),
+        },
+        {
+          onSuccess: (validationResult) => {
+            // Use normalized address from USPS if available
+            const normalizedAddr = validationResult.normalizedAddress;
+            proceedWithBooking(
+              normalizedAddr.street,
+              normalizedAddr.city,
+              normalizedAddr.state,
+              normalizedAddr.zip
+            );
+          },
+          onError: (error) => {
+            // Show address validation error
+            const errorMessage = error instanceof Error ? error.message : 'Address validation failed';
+            setErrors((prev) => ({ ...prev, addressLine1: errorMessage }));
+            toast.error(errorMessage);
+          },
+        }
+      );
+    } else {
+      // No address validation needed (dropoff only or no address)
+      proceedWithBooking();
+    }
+  };
 
-    try {
-      const bookingData: BookingFormSubmission = {
+  const proceedWithBooking = (
+    normalizedStreet?: string,
+    normalizedCity?: string,
+    normalizedState?: string,
+    normalizedZip?: string
+  ) => {
+    createBooking.mutate(
+      {
         customer_name: customerName.trim(),
         email: email.trim().toLowerCase(),
         phone: phone.trim(),
-        address_line1: addressLine1.trim() || undefined,
-        city: city.trim() || undefined,
-        state: state.trim() || undefined,
-        zip: zip.trim() || undefined,
+        address_line1: normalizedStreet || addressLine1.trim() || undefined,
+        city: normalizedCity || city.trim() || undefined,
+        state: normalizedState || state.trim() || undefined,
+        zip: normalizedZip || zip.trim() || undefined,
         service_type: serviceType,
         date: format(date!, 'yyyy-MM-dd'),
         time_window: timeWindow,
         bag_count: bagCount,
         payment_method: paymentMethod,
         notes: notes.trim() || undefined,
-      };
-
-      const response = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bookingData),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to create booking');
+      },
+      {
+        onSuccess: (result) => {
+          if (paymentMethod === 'stripe' && result.checkoutUrl) {
+            // Redirect to Stripe Checkout
+            window.location.href = result.checkoutUrl;
+          } else {
+            // Offline payment - redirect to success page
+            router.push(`/success?booking=${result.booking.id}`);
+          }
+        },
+        onError: (error) => {
+          console.error('Booking error:', error);
+          toast.error(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
+        },
       }
-
-      if (paymentMethod === 'stripe' && result.checkoutUrl) {
-        // Redirect to Stripe Checkout
-        window.location.href = result.checkoutUrl;
-      } else {
-        // Offline payment - redirect to success page
-        router.push(`/success?booking=${result.booking.id}`);
-      }
-    } catch (error) {
-      console.error('Booking error:', error);
-      toast.error(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    );
   };
 
   return (
@@ -191,8 +229,10 @@ export function BookingForm() {
               <Input
                 id="customerName"
                 value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
+                onChange={(e) => setCustomerName(e.target.value.replace(/[^a-zA-Z\s.\-']/g, ''))}
                 placeholder="Jane Doe"
+                maxLength={100}
+                autoComplete="name"
                 className={errors.customerName ? 'border-red-500' : 'border-[#D4C5A9]'}
               />
               {errors.customerName && (
@@ -205,9 +245,12 @@ export function BookingForm() {
               <Input
                 id="email"
                 type="email"
+                inputMode="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="jane@example.com"
+                maxLength={254}
+                autoComplete="email"
                 className={errors.email ? 'border-red-500' : 'border-[#D4C5A9]'}
               />
               {errors.email && (
@@ -220,9 +263,12 @@ export function BookingForm() {
               <Input
                 id="phone"
                 type="tel"
+                inputMode="tel"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => setPhone(e.target.value.replace(/[^\d\s()\-+.]/g, ''))}
                 placeholder="(555) 123-4567"
+                maxLength={20}
+                autoComplete="tel"
                 className={errors.phone ? 'border-red-500' : 'border-[#D4C5A9]'}
               />
               {errors.phone && (
@@ -292,8 +338,10 @@ export function BookingForm() {
                 <Input
                   id="addressLine1"
                   value={addressLine1}
-                  onChange={(e) => setAddressLine1(e.target.value)}
+                  onChange={(e) => setAddressLine1(e.target.value.replace(/[^a-zA-Z0-9\s.,#\-']/g, ''))}
                   placeholder="123 Main Street"
+                  maxLength={100}
+                  autoComplete="street-address"
                   className={errors.addressLine1 ? 'border-red-500' : 'border-[#D4C5A9]'}
                 />
                 {errors.addressLine1 && (
@@ -307,8 +355,10 @@ export function BookingForm() {
                   <Input
                     id="city"
                     value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    onChange={(e) => setCity(e.target.value.replace(/[^a-zA-Z\s.\-']/g, ''))}
                     placeholder="Jacksonville"
+                    maxLength={50}
+                    autoComplete="address-level2"
                     className={errors.city ? 'border-red-500' : 'border-[#D4C5A9]'}
                   />
                   {errors.city && (
@@ -321,10 +371,11 @@ export function BookingForm() {
                   <Input
                     id="state"
                     value={state}
-                    onChange={(e) => setState(e.target.value)}
+                    onChange={(e) => setState(e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase())}
                     placeholder="FL"
                     maxLength={2}
-                    className={errors.state ? 'border-red-500' : 'border-[#D4C5A9]'}
+                    autoComplete="address-level1"
+                    className={`uppercase ${errors.state ? 'border-red-500' : 'border-[#D4C5A9]'}`}
                   />
                   {errors.state && (
                     <p className="text-sm text-red-500">{errors.state}</p>
@@ -335,9 +386,12 @@ export function BookingForm() {
                   <Label htmlFor="zip">ZIP *</Label>
                   <Input
                     id="zip"
+                    inputMode="numeric"
                     value={zip}
-                    onChange={(e) => setZip(e.target.value)}
+                    onChange={(e) => setZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
                     placeholder="32065"
+                    maxLength={5}
+                    autoComplete="postal-code"
                     className={errors.zip ? 'border-red-500' : 'border-[#D4C5A9]'}
                   />
                   {errors.zip && (
@@ -390,16 +444,16 @@ export function BookingForm() {
             <div className="space-y-2">
               <Label>Preferred Time Window (Optional)</Label>
               <Select
-                value={timeWindow || ''}
+                value={timeWindow || 'any'}
                 onValueChange={(value) =>
-                  setTimeWindow(value ? (value as NonNullable<TimeWindow>) : null)
+                  setTimeWindow(value === 'any' ? null : (value as NonNullable<TimeWindow>))
                 }
               >
                 <SelectTrigger className="border-[#D4C5A9]">
                   <SelectValue placeholder="Any time works" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Any time works</SelectItem>
+                  <SelectItem value="any">Any time works</SelectItem>
                   {(Object.entries(TIME_WINDOW_LABELS) as [string, string][]).map(
                     ([value, label]) => (
                       <SelectItem key={value} value={value}>
@@ -581,10 +635,15 @@ export function BookingForm() {
       <Button
         type="submit"
         size="lg"
-        disabled={isSubmitting}
+        disabled={createBooking.isPending || validateAddress.isPending}
         className="w-full bg-[#C9A962] hover:bg-[#DBC07A] text-[#1A3D2E] py-6 text-lg rounded-full shadow-lg font-semibold"
       >
-        {isSubmitting ? (
+        {validateAddress.isPending ? (
+          <>
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            Validating Address...
+          </>
+        ) : createBooking.isPending ? (
           <>
             <Loader2 className="mr-2 h-5 w-5 animate-spin" />
             Processing...

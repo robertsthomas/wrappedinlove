@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
@@ -21,46 +21,19 @@ import {
   Home,
   Loader2,
 } from 'lucide-react';
-import type { Booking } from '@/types/booking';
+import { useBooking } from '@/hooks/useBookings';
 import { SERVICE_TYPE_LABELS, TIME_WINDOW_LABELS, STATUS_LABELS } from '@/types/booking';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get('booking');
-  const [booking, setBooking] = useState<Booking | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const cashAppHandle = process.env.NEXT_PUBLIC_CASHAPP_HANDLE || '$YourCashApp';
   const venmoHandle = process.env.NEXT_PUBLIC_VENMO_HANDLE || '@YourVenmo';
 
-  useEffect(() => {
-    async function fetchBooking() {
-      if (!bookingId) {
-        setError('No booking ID provided');
-        setLoading(false);
-        return;
-      }
+  const { data: booking, isLoading, error } = useBooking(bookingId);
 
-      try {
-        const response = await fetch(`/api/bookings/${bookingId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch booking');
-        }
-        const data = await response.json();
-        setBooking(data.booking);
-      } catch (err) {
-        console.error('Error fetching booking:', err);
-        setError('Could not load booking details');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchBooking();
-  }, [bookingId]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-8 w-8 animate-spin text-[#1A3D2E]" />
@@ -76,7 +49,11 @@ function SuccessContent() {
           Booking Not Found
         </h2>
         <p className="text-[#4A6358] mb-6">
-          {error || 'We could not find your booking details.'}
+          {!bookingId
+            ? 'No booking ID provided'
+            : error instanceof Error
+              ? error.message
+              : 'We could not find your booking details.'}
         </p>
         <Button asChild className="bg-[#1A3D2E] hover:bg-[#0F2A1F] text-[#E8DFC9]">
           <Link href="/">
@@ -244,7 +221,7 @@ function SuccessContent() {
           <ul className="space-y-3 text-[#4A6358]">
             {isOfflinePayment && (
               <li className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-[#C9A962]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-6 h-6 rounded-full bg-[#C9A962]/20 flex items-center justify-center shrink-0 mt-0.5">
                   <span className="text-xs font-bold text-[#C9A962]">1</span>
                 </div>
                 <span>
@@ -254,7 +231,7 @@ function SuccessContent() {
               </li>
             )}
             <li className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-[#1A3D2E]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 rounded-full bg-[#1A3D2E]/10 flex items-center justify-center shrink-0 mt-0.5">
                 <span className="text-xs font-bold text-[#1A3D2E]">
                   {isOfflinePayment ? '2' : '1'}
                 </span>
@@ -265,7 +242,7 @@ function SuccessContent() {
               </span>
             </li>
             <li className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-[#1A3D2E]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 rounded-full bg-[#1A3D2E]/10 flex items-center justify-center shrink-0 mt-0.5">
                 <span className="text-xs font-bold text-[#1A3D2E]">
                   {isOfflinePayment ? '3' : '2'}
                 </span>
@@ -276,7 +253,7 @@ function SuccessContent() {
               </span>
             </li>
             <li className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-[#C9A962]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 rounded-full bg-[#C9A962]/20 flex items-center justify-center shrink-0 mt-0.5">
                 <span className="text-xs font-bold text-[#C9A962]">
                   {isOfflinePayment ? '4' : '3'}
                 </span>

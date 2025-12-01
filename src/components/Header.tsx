@@ -14,7 +14,6 @@ export function Header() {
         <Link href="/" className="flex items-center gap-2 group">
           <div className="relative">
             <Gift className="h-8 w-8 text-[#1A3D2E] group-hover:scale-110 transition-transform" />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#C9A962] rounded-full animate-pulse" />
           </div>
           <span className="font-serif text-xl font-semibold text-[#1A3D2E]">
             Wrapped in Love Co.
@@ -48,6 +47,7 @@ export function Header() {
 
         {/* Mobile Menu Button */}
         <button
+          type="button"
           className="md:hidden p-2"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"

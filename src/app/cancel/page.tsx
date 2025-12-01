@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
@@ -18,39 +18,16 @@ import {
   Mail,
   Loader2,
 } from 'lucide-react';
-import type { Booking } from '@/types/booking';
+import { useBooking } from '@/hooks/useBookings';
 import { SERVICE_TYPE_LABELS } from '@/types/booking';
 
 function CancelContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get('booking');
-  const [booking, setBooking] = useState<Booking | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchBooking() {
-      if (!bookingId) {
-        setLoading(false);
-        return;
-      }
+  const { data: booking, isLoading } = useBooking(bookingId);
 
-      try {
-        const response = await fetch(`/api/bookings/${bookingId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setBooking(data.booking);
-        }
-      } catch (err) {
-        console.error('Error fetching booking:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchBooking();
-  }, [bookingId]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-8 w-8 animate-spin text-[#1A3D2E]" />
