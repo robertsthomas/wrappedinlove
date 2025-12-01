@@ -71,8 +71,7 @@ export default function HomePage() {
 
               <p className="text-lg md:text-xl text-[#E8DFC9]/80 max-w-2xl mx-auto leading-relaxed">
                 If the holidays have you feeling overwhelmed, we&apos;re here to help! 
-                We keep it simple, affordable, and done with love. I&apos;m not a professional—just 
-                a mom who enjoys wrapping and wants to give back.
+                We keep it simple, affordable, and done with love.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -111,7 +110,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-[#C9A962]" />
-                  <span>3-day turnaround</span>
+                  <span>2-day turnaround</span>
                 </div>
               </div>
             </div>
@@ -150,14 +149,14 @@ export default function HomePage() {
                   icon: Gift,
                   title: 'We Work Our Magic',
                   description:
-                    'Within 3 days, we wrap each gift with care using beautiful paper, ribbons, and bows.',
+                    'Within 2 days, we wrap each gift with care using our wrapping paper.',
                   step: 3,
                 },
                 {
                   icon: Heart,
                   title: 'Receive & Delight',
                   description:
-                    'Pick up your perfectly wrapped presents, ready to place under the tree!',
+                    'Pick up your wrapped presents, ready to place under the tree!',
                   step: 4,
                 },
               ].map((item, index) => (
@@ -224,11 +223,10 @@ export default function HomePage() {
 
                   <ul className="space-y-4 mb-8">
                     {[
-                      'Wrapping paper (ours or bring your own!)',
-                      'Coordinating ribbons & bows',
-                      'Gift tags included',
+                      'Wrapping paper provided',
                       'Careful handling of all items',
-                      '3-day turnaround',
+                      '2-day turnaround',
+                      'One bag per child please!',
                     ].map((item, index) => (
                       <li key={index} className="flex items-start gap-3">
                         <CheckCircle2 className="h-5 w-5 text-[#1A3D2E] flex-shrink-0 mt-0.5" />
@@ -287,9 +285,9 @@ export default function HomePage() {
                 },
                 {
                   icon: Sparkles,
-                  title: 'Professional Quality',
+                  title: 'Wrapped with Care',
                   description:
-                    'Every gift is wrapped with precision and care, creating that picture-perfect moment.',
+                    'Every gift is wrapped with care. We do our best to make your presents look great!',
                 },
                 {
                   icon: Heart,
@@ -301,19 +299,19 @@ export default function HomePage() {
                   icon: Truck,
                   title: 'Convenient Options',
                   description:
-                    'Free drop-off or pickup service available. We make it easy for you.',
+                    'Drop-off and pickup services available. We make it easy for you.',
                 },
                 {
                   icon: Gift,
-                  title: 'All Supplies Included',
+                  title: 'Supplies Included',
                   description:
-                    'Premium paper, ribbons, bows, and tags—all included in our simple pricing.',
+                    'Wrapping paper provided and included in our simple pricing.',
                 },
                 {
                   icon: CheckCircle2,
                   title: 'Quick Turnaround',
                   description:
-                    'Get your beautifully wrapped gifts back within 3 days. Perfect timing!',
+                    'Get your beautifully wrapped gifts back within 2 days. Perfect timing!',
                 },
               ].map((item, index) => (
                 <Card
@@ -359,17 +357,17 @@ export default function HomePage() {
                 {
                   question: 'Do I need to provide the wrapping paper?',
                   answer:
-                    "We use our own wrapping paper, but you're welcome to bring yours if you prefer! We provide ribbons, bows, and gift tags either way.",
+                    "We provide the wrapping paper! It's included in the price.",
                 },
                 {
                   question: 'How should I organize my gifts?',
                   answer:
-                    "Please keep each child's gifts in their own separate bag so nothing gets mixed together. Label the bag with their name!",
+                    "One bag per child please! Do not mix several children's gifts in one bag. Label each bag with the child's name so nothing gets mixed up.",
                 },
                 {
                   question: 'How long does wrapping take?',
                   answer:
-                    'We have a 3-day turnaround. Drop off your bags and pick them up beautifully wrapped within 3 days!',
+                    'We have a 2-day turnaround. Drop off your bags and pick them up wrapped within 2 days!',
                 },
                 {
                   question: 'What areas do you service?',
@@ -379,12 +377,12 @@ export default function HomePage() {
                 {
                   question: 'What payment methods do you accept?',
                   answer:
-                    'We accept Cash App, Venmo, or cash at pickup/dropoff. Payment is due when we return your wrapped gifts.',
+                    'We accept Cash App, Venmo, or cash. Payment is due when you drop off or when we pick up your gifts.',
                 },
                 {
                   question: 'What if I have an oddly shaped gift?',
                   answer:
-                    "Awkward shaped gifts will be wrapped to the best of our ability! We love a challenge and will make sure it looks beautiful.",
+                    "We will try our best to wrap each gift! Awkward shapes may not come out perfect, but we'll do what we can.",
                 },
                 {
                   question: 'Is there a minimum order?',

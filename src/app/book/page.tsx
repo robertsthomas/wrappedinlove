@@ -6,11 +6,11 @@ import { BookingPageContent } from '@/components/BookingPageContent';
 export const metadata: Metadata = {
   title: 'Book Your Wrapping | Wrapped in Love Co.',
   description:
-    'Book your professional gift wrapping service. Choose your date, bag count, and payment method. We handle the rest!',
+    'Book your gift wrapping service. Choose your date, bag count, and payment method. We handle the rest!',
   openGraph: {
     title: 'Book Your Wrapping | Wrapped in Love Co.',
     description:
-      'Book your professional gift wrapping service. Choose your date, bag count, and payment method.',
+      'Book your gift wrapping service. Choose your date, bag count, and payment method.',
   },
 };
 

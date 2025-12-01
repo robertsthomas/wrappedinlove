@@ -57,7 +57,7 @@ export const bookingSchema = customerSchema.extend({
   city: z.string().optional(),
   state: z.string().optional(),
   zip: z.string().optional(),
-  service_type: z.enum(['pickup_delivery', 'dropoff_pickup']),
+  service_type: z.enum(['dropoff_pickup', 'pickup_delivery']),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format'),
   time_window: z.enum(['morning', 'afternoon', 'evening']).nullable(),
   bag_count: z.number().int().min(1, 'At least 1 bag required').max(100, 'Maximum 100 bags'),

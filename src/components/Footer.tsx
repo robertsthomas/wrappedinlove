@@ -15,7 +15,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-[#E8DFC9]/70 text-sm leading-relaxed">
-              Professional gift wrapping with a personal touch. Let us help you give the gift of beautifully wrapped presents.
+              Gift wrapping with a personal touch. Just a mom who loves wrapping and wants to help out during the busy season!
             </p>
           </div>
 

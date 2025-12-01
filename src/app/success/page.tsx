@@ -259,8 +259,8 @@ function SuccessContent() {
                 </span>
               </div>
               <span>
-                <strong className="text-[#1A3D2E]">3-day turnaround:</strong> Your beautifully
-                wrapped gifts will be ready within 3 days!
+                <strong className="text-[#1A3D2E]">2-day turnaround:</strong> Your wrapped
+                gifts will be ready within 2 days!
               </span>
             </li>
           </ul>

@@ -264,7 +264,6 @@ export function BookingForm() {
                 inputMode="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/[^\d\s()\-+.]/g, ''))}
-                placeholder="(555) 123-4567"
                 maxLength={20}
                 autoComplete="tel"
                 className={errors.phone ? 'border-red-500' : 'border-[#D4C5A9]'}
@@ -467,8 +466,8 @@ export function BookingForm() {
           <div className="flex items-start gap-2 text-sm text-[#4A6358] bg-[#E8DFC9] p-3 rounded-lg">
             <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-[#1A3D2E]" />
             <p>
-              <strong className="text-[#1A3D2E]">3-day turnaround!</strong> Your gifts will be ready 
-              within 3 days of drop-off.
+              <strong className="text-[#1A3D2E]">2-day turnaround!</strong> Your gifts will be ready 
+              within 2 days of drop-off.
             </p>
           </div>
         </CardContent>
@@ -509,21 +508,12 @@ export function BookingForm() {
             </Button>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-start gap-2 text-sm text-[#4A6358] bg-[#E8DFC9] p-3 rounded-lg">
-              <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-[#1A3D2E]" />
-              <p>
-                A 13-gallon bag is a standard tall kitchen trash bag. Fill it with unwrapped
-                gifts and we&apos;ll take care of the rest!
-              </p>
-            </div>
-            <div className="flex items-start gap-2 text-sm text-[#4A6358] bg-[#E8DFC9] p-3 rounded-lg">
-              <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-[#1A3D2E]" />
-              <p>
-                <strong className="text-[#1A3D2E]">Tip:</strong> Please label each bag with the child&apos;s name 
-                to keep gifts organized. Bags larger than 13 gallons will be priced as 2 bags.
-              </p>
-            </div>
+          <div className="flex items-start gap-2 text-sm text-[#4A6358] bg-[#E8DFC9] p-3 rounded-lg">
+            <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-[#1A3D2E]" />
+            <p>
+              <strong className="text-[#1A3D2E]">One bag per child!</strong> Don&apos;t mix multiple children&apos;s gifts in one bag. 
+              Label each bag with the child&apos;s name. Bags larger than 13 gallons = 2 bags.
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -541,8 +531,25 @@ export function BookingForm() {
               <span className="font-medium text-[#1A3D2E]">Pay at Pickup/Dropoff</span>
             </div>
             <p className="text-sm text-[#4A6358]">
-              We accept Cash App ({cashAppHandle}), Venmo ({venmoHandle}), or cash.
-              Payment is due when we return your beautifully wrapped gifts!
+              We accept{' '}
+              <a 
+                href={`https://cash.app/${cashAppHandle.replace('$', '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[#1A3D2E] underline hover:text-[#0F2A1F]"
+              >
+                Cash App
+              </a>
+              ,{' '}
+              <a 
+                href={`https://venmo.com/${venmoHandle.replace('@', '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[#1A3D2E] underline hover:text-[#0F2A1F]"
+              >
+                Venmo
+              </a>
+              , or cash. Payment is due at dropoff.
             </p>
           </div>
         </CardContent>

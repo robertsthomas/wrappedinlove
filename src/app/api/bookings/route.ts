@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
               unit_amount: PRICE_PER_BAG * 100, // Stripe uses cents
               product_data: {
                 name: 'Gift Wrapping Service',
-                description: `Professional gift wrapping for ${body.bag_count} bag(s)`,
+                description: `Gift wrapping for ${body.bag_count} bag(s)`,
               },
             },
             quantity: body.bag_count,

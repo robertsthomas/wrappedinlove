@@ -4,13 +4,13 @@ import { Providers } from "@/components/Providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Wrapped in Love Co. | Professional Gift Wrapping Service",
-  description: "Let us wrap your gifts with love! Professional gift wrapping service at $35 per 13-gallon bag. Pickup and delivery available. Book your wrapping day today!",
+  title: "Wrapped in Love Co. | Gift Wrapping Service",
+  description: "Let us wrap your gifts with love! Gift wrapping service at $35 per 13-gallon bag. Pickup and delivery available. Book your wrapping day today!",
   keywords: ["gift wrapping", "holiday wrapping", "christmas wrapping", "gift wrapping service", "local gift wrapping"],
   authors: [{ name: "Wrapped in Love Co." }],
   openGraph: {
-    title: "Wrapped in Love Co. | Professional Gift Wrapping Service",
-    description: "Let us wrap your gifts with love! Professional gift wrapping service at $35 per 13-gallon bag.",
+    title: "Wrapped in Love Co. | Gift Wrapping Service",
+    description: "Let us wrap your gifts with love! Gift wrapping service at $35 per 13-gallon bag.",
     url: process.env.NEXT_PUBLIC_SITE_URL,
     siteName: "Wrapped in Love Co.",
     images: [
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Wrapped in Love Co. - Professional Gift Wrapping",
+        alt: "Wrapped in Love Co. - Gift Wrapping",
       },
     ],
     locale: "en_US",
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Wrapped in Love Co. | Professional Gift Wrapping Service",
-    description: "Let us wrap your gifts with love! Professional gift wrapping service at $35 per 13-gallon bag.",
+    title: "Wrapped in Love Co. | Gift Wrapping Service",
+    description: "Let us wrap your gifts with love! Gift wrapping service at $35 per 13-gallon bag.",
     images: ["/og-image.png"],
   },
   robots: {
