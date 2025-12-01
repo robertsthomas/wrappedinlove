@@ -42,7 +42,6 @@ export function BookingForm() {
 
   // Form state
   const [customerName, setCustomerName] = useState('');
-  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [addressLine1, setAddressLine1] = useState('');
   const [city, setCity] = useState('');
@@ -88,7 +87,6 @@ export function BookingForm() {
     // Validate customer info with Zod
     const customerResult = customerSchema.safeParse({
       customer_name: customerName.trim(),
-      email: email.trim(),
       phone: phone.trim(),
     });
 
@@ -96,7 +94,6 @@ export function BookingForm() {
       const zodErrors = formatZodErrors(customerResult.error);
       // Map Zod field names to form field names
       if (zodErrors.customer_name) newErrors.customerName = zodErrors.customer_name;
-      if (zodErrors.email) newErrors.email = zodErrors.email;
       if (zodErrors.phone) newErrors.phone = zodErrors.phone;
     }
 
@@ -186,7 +183,6 @@ export function BookingForm() {
     createBooking.mutate(
       {
         customer_name: customerName.trim(),
-        email: email.trim().toLowerCase(),
         phone: phone.trim(),
         address_line1: normalizedStreet || addressLine1.trim() || undefined,
         city: normalizedCity || city.trim() || undefined,
@@ -228,31 +224,12 @@ export function BookingForm() {
                 id="customerName"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value.replace(/[^a-zA-Z\s.\-']/g, ''))}
-                placeholder="Jane Doe"
                 maxLength={100}
                 autoComplete="name"
                 className={errors.customerName ? 'border-red-500' : 'border-[#D4C5A9]'}
               />
               {errors.customerName && (
                 <p className="text-sm text-red-500">{errors.customerName}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
-              <Input
-                id="email"
-                type="email"
-                inputMode="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="jane@example.com"
-                maxLength={254}
-                autoComplete="email"
-                className={errors.email ? 'border-red-500' : 'border-[#D4C5A9]'}
-              />
-              {errors.email && (
-                <p className="text-sm text-red-500">{errors.email}</p>
               )}
             </div>
 
@@ -511,7 +488,7 @@ export function BookingForm() {
           <div className="flex items-start gap-2 text-sm text-[#4A6358] bg-[#E8DFC9] p-3 rounded-lg">
             <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-[#1A3D2E]" />
             <p>
-              <strong className="text-[#1A3D2E]">One bag per child!</strong> Don&apos;t mix multiple children&apos;s gifts in one bag. 
+              <strong className="text-[#1A3D2E]">One bag per child</strong> 
               Label each bag with the child&apos;s name. Bags larger than 13 gallons = 2 bags.
             </p>
           </div>

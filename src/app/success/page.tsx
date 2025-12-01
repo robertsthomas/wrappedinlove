@@ -97,7 +97,7 @@ function SuccessContent() {
           {/* Customer Info */}
           <div>
             <h3 className="font-semibold text-[#1A3D2E] mb-1">{booking.customer_name}</h3>
-            <p className="text-sm text-[#4A6358]">{booking.email}</p>
+            {booking.email && <p className="text-sm text-[#4A6358]">{booking.email}</p>}
             <p className="text-sm text-[#4A6358]">{booking.phone}</p>
           </div>
 

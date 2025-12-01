@@ -63,7 +63,7 @@ function CancelContent() {
             <div className="space-y-4">
               <div>
                 <p className="font-semibold text-[#1A3D2E]">{booking.customer_name}</p>
-                <p className="text-sm text-[#4A6358]">{booking.email}</p>
+                {booking.email && <p className="text-sm text-[#4A6358]">{booking.email}</p>}
               </div>
 
               <div className="grid grid-cols-2 gap-4">

@@ -40,10 +40,6 @@ export const customerSchema = z.object({
     .min(2, 'Name must be at least 2 characters')
     .max(100, 'Name is too long')
     .regex(/^[a-zA-Z\s.\-']+$/, 'Name contains invalid characters'),
-  email: z
-    .string()
-    .email('Please enter a valid email address')
-    .max(254, 'Email is too long'),
   phone: z
     .string()
     .min(10, 'Phone number must be at least 10 digits')

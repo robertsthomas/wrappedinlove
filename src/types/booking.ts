@@ -8,7 +8,7 @@ export interface Booking {
   created_at: string;
   updated_at: string;
   customer_name: string;
-  email: string;
+  email?: string | null;
   phone: string;
   address_line1?: string | null;
   city?: string | null;
@@ -27,7 +27,6 @@ export interface Booking {
 
 export interface BookingFormSubmission {
   customer_name: string;
-  email: string;
   phone: string;
   address_line1?: string;
   city?: string;

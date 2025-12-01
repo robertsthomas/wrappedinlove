@@ -110,7 +110,7 @@ export default function AdminBookingsPage() {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(b => 
         b.customer_name.toLowerCase().includes(query) ||
-        b.email.toLowerCase().includes(query) ||
+        (b.email?.toLowerCase().includes(query) ?? false) ||
         b.phone.includes(query) ||
         b.id.toLowerCase().includes(query)
       );
@@ -633,7 +633,7 @@ function BookingRow({
           </div>
           <div>
             <p className="font-medium text-gray-900">{booking.customer_name}</p>
-            <p className="text-xs text-gray-500">{booking.email}</p>
+            <p className="text-xs text-gray-500">{booking.email || booking.phone}</p>
           </div>
         </div>
       </TableCell>
@@ -703,7 +703,7 @@ function MobileBookingCard({
           </div>
           <div className="min-w-0">
             <p className="font-semibold text-gray-900 truncate">{booking.customer_name}</p>
-            <p className="text-xs text-gray-500 truncate">{booking.email}</p>
+            <p className="text-xs text-gray-500 truncate">{booking.email || booking.phone}</p>
           </div>
         </div>
         <DropdownMenu>

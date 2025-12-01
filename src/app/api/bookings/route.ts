@@ -8,20 +8,13 @@ export async function POST(request: NextRequest) {
     const body: BookingFormSubmission = await request.json();
 
     // Validate required fields
-    if (!body.customer_name || !body.email || !body.phone || !body.date || !body.bag_count) {
+    if (!body.customer_name || !body.phone || !body.date || !body.bag_count) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Validate email format
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
 
     // Check for required environment variables
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -48,7 +41,7 @@ export async function POST(request: NextRequest) {
       .from('bookings')
       .insert({
         customer_name: body.customer_name,
-        email: body.email.toLowerCase(),
+        email: null,
         phone: body.phone,
         address_line1: body.address_line1 || null,
         city: body.city || null,
@@ -89,7 +82,6 @@ export async function POST(request: NextRequest) {
       const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         payment_method_types: ['card'],
-        customer_email: body.email.toLowerCase(),
         line_items: [
           {
             price_data: {
