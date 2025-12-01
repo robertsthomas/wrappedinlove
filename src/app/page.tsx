@@ -70,8 +70,9 @@ export default function HomePage() {
               </p>
 
               <p className="text-lg md:text-xl text-[#E8DFC9]/80 max-w-2xl mx-auto leading-relaxed">
-                Skip the scissors and tape! We&apos;ll transform your gifts into stunning,
-                professionally wrapped packages that show your loved ones just how much you care.
+                If the holidays have you feeling overwhelmed, we&apos;re here to help! 
+                We keep it simple, affordable, and done with love. I&apos;m not a professional—just 
+                a mom who enjoys wrapping and wants to give back.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -140,9 +141,9 @@ export default function HomePage() {
                 },
                 {
                   icon: Truck,
-                  title: 'Drop Off or Schedule',
+                  title: 'Choose Your Service',
                   description:
-                    'Free drop-off at our home, or we can pick up for $15. Your choice!',
+                    'Drop-off & pick-up for free, or we can pick up and deliver back for $15.',
                   step: 2,
                 },
                 {
@@ -223,7 +224,7 @@ export default function HomePage() {
 
                   <ul className="space-y-4 mb-8">
                     {[
-                      'Premium wrapping paper (we provide!)',
+                      'Wrapping paper (ours or bring your own!)',
                       'Coordinating ribbons & bows',
                       'Gift tags included',
                       'Careful handling of all items',
@@ -239,12 +240,12 @@ export default function HomePage() {
                   <div className="bg-[#F5F0E6] rounded-lg p-4 mb-6 space-y-2">
                     <p className="text-sm text-center">
                       <span className="font-semibold text-[#1A3D2E]">
-                        ✓ Free drop-off at our home
+                        ✓ Drop-off & Pick-up: Free
                       </span>
                     </p>
                     <p className="text-sm text-center text-[#4A6358]">
-                      Pickup + delivery available for{' '}
-                      <span className="font-semibold text-[#1A3D2E]">${pickupDeliveryFee}</span>
+                      Pickup & Dropoff (we pick up and deliver back):{' '}
+                      <span className="font-semibold text-[#1A3D2E]">+${pickupDeliveryFee}</span>
                     </p>
                   </div>
 
@@ -353,12 +354,17 @@ export default function HomePage() {
                 {
                   question: 'What size is a 13-gallon bag?',
                   answer:
-                    'A 13-gallon bag is a standard tall kitchen trash bag. It can fit several medium-sized gifts or a few larger items. When in doubt, use multiple bags!',
+                    'A 13-gallon bag is a standard tall kitchen trash bag. It can fit several medium-sized gifts or a few larger items. Bags larger than 13 gallons will be priced as 2 bags.',
                 },
                 {
                   question: 'Do I need to provide the wrapping paper?',
                   answer:
-                    "Nope! We provide all wrapping materials including premium paper, ribbons, bows, and gift tags. Just bring your unwrapped gifts and we'll handle the rest.",
+                    "We use our own wrapping paper, but you're welcome to bring yours if you prefer! We provide ribbons, bows, and gift tags either way.",
+                },
+                {
+                  question: 'How should I organize my gifts?',
+                  answer:
+                    "Please keep each child's gifts in their own separate bag so nothing gets mixed together. Label the bag with their name!",
                 },
                 {
                   question: 'How long does wrapping take?',
@@ -368,17 +374,17 @@ export default function HomePage() {
                 {
                   question: 'What areas do you service?',
                   answer:
-                    'We serve the Oakleaf and Argyle areas in Jacksonville, FL. Free drop-off at our home, or pickup/delivery available for $15.',
+                    'We serve Oakleaf, Argyle, and Eagle Landing in Jacksonville, FL. Free drop-off at our home, or pickup/delivery available for $15.',
                 },
                 {
                   question: 'What payment methods do you accept?',
                   answer:
-                    'We accept credit/debit cards online via Stripe, or you can pay later with Cash App, Venmo, or cash at pickup/dropoff.',
+                    'We accept Cash App, Venmo, or cash at pickup/dropoff. Payment is due when we return your wrapped gifts.',
                 },
                 {
                   question: 'What if I have an oddly shaped gift?',
                   answer:
-                    "We love a challenge! We can wrap almost anything. Just leave us a note with your booking and we'll make sure it looks beautiful.",
+                    "Awkward shaped gifts will be wrapped to the best of our ability! We love a challenge and will make sure it looks beautiful.",
                 },
                 {
                   question: 'Is there a minimum order?',

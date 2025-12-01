@@ -59,7 +59,7 @@ export function Footer() {
               <div className="flex items-start gap-2 text-sm text-[#E8DFC9]/70">
                 <MapPin className="h-4 w-4 text-[#C9A962] mt-0.5 flex-shrink-0" />
                 <span>
-                  Serving Oakleaf & Argyle areas
+                  Serving Oakleaf, Argyle & Eagle Landing
                   <br />
                   <span className="text-[#E8DFC9]/50">Jacksonville, FL</span>
                 </span>

@@ -244,9 +244,11 @@ export default function AdminBookingsPage() {
   const handleLogout = async () => {
     try {
       await fetch('/api/admin/auth', { method: 'DELETE' });
-      router.replace('/admin');
+      router.push('/');
     } catch (error) {
       console.error('Logout error:', error);
+      // Still redirect even if logout API call fails
+      router.push('/');
     }
   };
 
@@ -304,9 +306,10 @@ export default function AdminBookingsPage() {
                 variant="ghost"
                 size="sm"
                 onClick={handleLogout}
-                className="text-gray-600 h-8 w-8 p-0 sm:h-auto sm:w-auto sm:px-3"
+                className="text-gray-600 h-8 w-8 p-0 sm:h-auto sm:w-auto sm:px-3 gap-2"
               >
                 <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline">Logout</span>
               </Button>
             </div>
           </div>
@@ -635,7 +638,7 @@ function BookingRow({
         </div>
       </TableCell>
       <TableCell className="text-gray-600 hidden lg:table-cell">
-        {booking.service_type === 'pickup_delivery' ? 'Pickup & Delivery' : 'Drop-off Only'}
+        {booking.service_type === 'pickup_delivery' ? 'Delivery & Pickup' : 'Drop-off & Pick-up'}
       </TableCell>
       <TableCell className="text-gray-900 font-medium">
         {booking.bag_count}

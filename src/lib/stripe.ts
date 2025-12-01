@@ -13,6 +13,8 @@ export function calculateTotal(bagCount: number, includesPickupDelivery: boolean
 }
 
 export function requiresPickupDelivery(serviceType: string): boolean {
-  return serviceType === 'pickup_delivery' || serviceType === 'dropoff_pickup';
+  // Only pickup_delivery (we pick up and deliver back) requires the $15 fee
+  // dropoff_pickup (they drop off and pick up) is free
+  return serviceType === 'pickup_delivery';
 }
 

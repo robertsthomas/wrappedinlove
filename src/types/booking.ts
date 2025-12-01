@@ -1,4 +1,4 @@
-export type ServiceType = 'pickup_delivery' | 'dropoff_pickup' | 'dropoff_only' | 'pickup_only';
+export type ServiceType = 'pickup_delivery' | 'dropoff_pickup';
 export type TimeWindow = 'morning' | 'afternoon' | 'evening' | null;
 export type PaymentMethod = 'stripe' | 'offline';
 export type BookingStatus = 'pending_payment' | 'awaiting_offline_payment' | 'paid' | 'canceled';
@@ -42,10 +42,8 @@ export interface BookingFormSubmission {
 }
 
 export const SERVICE_TYPE_LABELS: Record<ServiceType, string> = {
-  pickup_delivery: 'Pickup & Return Delivery',
-  dropoff_pickup: 'Dropoff & Pickup Later',
-  dropoff_only: 'Dropoff Only',
-  pickup_only: 'Pickup Only',
+  pickup_delivery: 'Pickup & Delivery',
+  dropoff_pickup: 'Drop-off & Pick-up',
 };
 
 export const TIME_WINDOW_LABELS: Record<NonNullable<TimeWindow>, string> = {

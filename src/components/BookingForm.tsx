@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { format, addDays, isBefore, isAfter, startOfDay } from 'date-fns';
 import { toast } from 'sonner';
-import { CalendarIcon, Loader2, CreditCard, Wallet, Minus, Plus, Info } from 'lucide-react';
+import { CalendarIcon, Loader2, Wallet, Minus, Plus, Info } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,16 +52,19 @@ export function BookingForm() {
   const [date, setDate] = useState<Date | undefined>();
   const [timeWindow, setTimeWindow] = useState<TimeWindow>(null);
   const [bagCount, setBagCount] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('stripe');
+  // Payment method is always offline (pay at pickup/dropoff)
+  const paymentMethod: PaymentMethod = 'offline';
   const [notes, setNotes] = useState('');
 
   const pickupDeliveryFee = Number(process.env.NEXT_PUBLIC_PICKUP_DELIVERY_FEE || 15);
   const cashAppHandle = process.env.NEXT_PUBLIC_CASHAPP_HANDLE || '$YourCashApp';
   const venmoHandle = process.env.NEXT_PUBLIC_VENMO_HANDLE || '@YourVenmo';
 
-  // Calculate if service requires pickup/delivery
-  const requiresPickupDelivery = serviceType === 'pickup_delivery' || serviceType === 'dropoff_pickup';
-  const requiresAddress = serviceType !== 'dropoff_only';
+  // Calculate if service requires pickup/delivery fee
+  // Only pickup_delivery (we pick up and deliver back) requires the $15 fee
+  const requiresPickupDelivery = serviceType === 'pickup_delivery';
+  // Both service types require an address (one for pickup, one for dropoff)
+  const requiresAddress = true;
 
   // Calculate total
   const estimatedTotal = useMemo(() => {
@@ -198,13 +201,8 @@ export function BookingForm() {
       },
       {
         onSuccess: (result) => {
-          if (paymentMethod === 'stripe' && result.checkoutUrl) {
-            // Redirect to Stripe Checkout
-            window.location.href = result.checkoutUrl;
-          } else {
-            // Offline payment - redirect to success page
-            router.push(`/success?booking=${result.booking.id}`);
-          }
+          // Always redirect to success page since we only accept offline payment
+          router.push(`/success?booking=${result.booking.id}`);
         },
         onError: (error) => {
           console.error('Booking error:', error);
@@ -300,15 +298,15 @@ export function BookingForm() {
                   }`}
                 >
                   <span className="font-medium text-[#1A3D2E]">{label}</span>
-                  {type === 'dropoff_only' ? (
-                    <span className="block text-xs text-[#1A3D2E] mt-1 font-medium">
-                      Free!
-                    </span>
-                  ) : (type === 'pickup_delivery' || type === 'dropoff_pickup') ? (
+                  {type === 'pickup_delivery' ? (
                     <span className="block text-xs text-[#4A6358] mt-1">
                       +${pickupDeliveryFee} delivery fee
                     </span>
-                  ) : null}
+                  ) : (
+                    <span className="block text-xs text-[#1A3D2E] mt-1 font-medium">
+                      Free!
+                    </span>
+                  )}
                 </button>
               )
             )}
@@ -317,8 +315,8 @@ export function BookingForm() {
           <div className="flex items-start gap-2 text-sm text-[#4A6358] bg-[#E8DFC9] p-3 rounded-lg">
             <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-[#1A3D2E]" />
             <p>
-              <strong className="text-[#1A3D2E]">Free drop-off</strong> at our home in the Oakleaf/Argyle area. 
-              We&apos;ll give you the address after booking!
+              <strong className="text-[#1A3D2E]">Drop-off & Pick-up:</strong> Free drop-off at our home. 
+              <strong className="text-[#1A3D2E]"> Pickup & Dropoff:</strong> We&apos;ll pick up from your address and deliver back for ${pickupDeliveryFee}.
             </p>
           </div>
         </CardContent>
@@ -511,72 +509,42 @@ export function BookingForm() {
             </Button>
           </div>
 
-          <div className="flex items-start gap-2 text-sm text-[#4A6358] bg-[#E8DFC9] p-3 rounded-lg">
-            <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-[#1A3D2E]" />
-            <p>
-              A 13-gallon bag is a standard tall kitchen trash bag. Fill it with unwrapped
-              gifts and we&apos;ll take care of the rest!
-            </p>
+          <div className="space-y-2">
+            <div className="flex items-start gap-2 text-sm text-[#4A6358] bg-[#E8DFC9] p-3 rounded-lg">
+              <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-[#1A3D2E]" />
+              <p>
+                A 13-gallon bag is a standard tall kitchen trash bag. Fill it with unwrapped
+                gifts and we&apos;ll take care of the rest!
+              </p>
+            </div>
+            <div className="flex items-start gap-2 text-sm text-[#4A6358] bg-[#E8DFC9] p-3 rounded-lg">
+              <Info className="h-4 w-4 mt-0.5 flex-shrink-0 text-[#1A3D2E]" />
+              <p>
+                <strong className="text-[#1A3D2E]">Tip:</strong> Please label each bag with the child&apos;s name 
+                to keep gifts organized. Bags larger than 13 gallons will be priced as 2 bags.
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Payment Method */}
+      {/* Payment Info */}
       <Card className="border-[#D4C5A9]">
         <CardContent className="p-6 space-y-4">
           <h3 className="font-serif text-xl font-semibold text-[#1A3D2E]">
-            Payment Method
+            Payment
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => setPaymentMethod('stripe')}
-              className={`p-4 rounded-lg border-2 text-left transition-all ${
-                paymentMethod === 'stripe'
-                  ? 'border-[#1A3D2E] bg-[#1A3D2E]/5'
-                  : 'border-[#D4C5A9] hover:border-[#1A3D2E]/50'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5 text-[#1A3D2E]" />
-                <span className="font-medium text-[#1A3D2E]">Pay Online</span>
-              </div>
-              <span className="text-xs text-[#4A6358] mt-1 block">
-                Secure payment via Stripe
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setPaymentMethod('offline')}
-              className={`p-4 rounded-lg border-2 text-left transition-all ${
-                paymentMethod === 'offline'
-                  ? 'border-[#1A3D2E] bg-[#1A3D2E]/5'
-                  : 'border-[#D4C5A9] hover:border-[#1A3D2E]/50'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <Wallet className="h-5 w-5 text-[#1A3D2E]" />
-                <span className="font-medium text-[#1A3D2E]">Pay Later</span>
-              </div>
-              <span className="text-xs text-[#4A6358] mt-1 block">
-                Cash App, Venmo, or cash
-              </span>
-            </button>
-          </div>
-
-          {paymentMethod === 'offline' && (
-            <div className="bg-[#C9A962]/20 p-4 rounded-lg border border-[#C9A962]/40">
-              <p className="text-sm text-[#1A3D2E]">
-                <strong>Pay Later Instructions:</strong>
-              </p>
-              <p className="text-sm text-[#4A6358] mt-1">
-                Pay via Cash App ({cashAppHandle}), Venmo ({venmoHandle}), or cash at
-                pickup/dropoff. Payment is due when we return your wrapped gifts.
-              </p>
+          <div className="bg-[#C9A962]/20 p-4 rounded-lg border border-[#C9A962]/40">
+            <div className="flex items-center gap-2 mb-2">
+              <Wallet className="h-5 w-5 text-[#1A3D2E]" />
+              <span className="font-medium text-[#1A3D2E]">Pay at Pickup/Dropoff</span>
             </div>
-          )}
+            <p className="text-sm text-[#4A6358]">
+              We accept Cash App ({cashAppHandle}), Venmo ({venmoHandle}), or cash.
+              Payment is due when we return your beautifully wrapped gifts!
+            </p>
+          </div>
         </CardContent>
       </Card>
 
@@ -611,13 +579,13 @@ export function BookingForm() {
             </div>
             {requiresPickupDelivery && (
               <div className="flex justify-between">
-                <span>Pickup/Delivery Fee</span>
+                <span>Pickup & Delivery Fee</span>
                 <span>${pickupDeliveryFee}</span>
               </div>
             )}
-            {!requiresPickupDelivery && serviceType === 'dropoff_only' && (
+            {!requiresPickupDelivery && (
               <div className="flex justify-between text-[#C9A962]">
-                <span>Drop-off at our home</span>
+                <span>Drop-off & Pick-up</span>
                 <span>Free!</span>
               </div>
             )}
@@ -648,8 +616,6 @@ export function BookingForm() {
             <Loader2 className="mr-2 h-5 w-5 animate-spin" />
             Processing...
           </>
-        ) : paymentMethod === 'stripe' ? (
-          'Continue to Payment'
         ) : (
           'Complete Booking'
         )}
