@@ -1,26 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-nunito);
+  --font-serif: var(--font-playfair);
   --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  
+  /* Holiday color palette - Forest Green & Cream */
+  --color-forest: #1A3D2E;
+  --color-forest-light: #2D5A47;
+  --color-forest-dark: #0F2A1F;
+  --color-cream: #E8DFC9;
+  --color-cream-light: #F5F0E6;
+  --color-cream-dark: #D4C5A9;
+  --color-gold: #C9A962;
+  --color-gold-light: #DBC07A;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.625rem;
+  --font-nunito: 'Nunito', sans-serif;
+  --font-playfair: 'Playfair Display', serif;
+  
+  /* Forest green & cream theme */
+  --background: #F5F0E6;
+  --foreground: #1A3D2E;
+  --card: #FFFFFF;
+  --card-foreground: #1A3D2E;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A3D2E;
+  --primary: #1A3D2E;
+  --primary-foreground: #E8DFC9;
+  --secondary: #E8DFC9;
+  --secondary-foreground: #1A3D2E;
+  --muted: #E8DFC9;
+  --muted-foreground: #4A6358;
+  --accent: #C9A962;
+  --accent-foreground: #1A3D2E;
+  --destructive: #DC2626;
+  --border: #D4C5A9;
+  --input: #D4C5A9;
+  --ring: #1A3D2E;
+  --chart-1: #1A3D2E;
+  --chart-2: #C9A962;
+  --chart-3: #8B6914;
+  --chart-4: #2D5A47;
+  --chart-5: #4A6358;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-nunito);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-playfair);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* Animation utilities */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(201, 169, 98, 0.3),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-twinkle {
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+/* Background pattern - subtle warm glow */
+.bg-pattern {
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(201, 169, 98, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(26, 61, 46, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(201, 169, 98, 0.03) 0%, transparent 70%);
+}
+
+/* String lights effect */
+.string-lights {
+  background-image: 
+    radial-gradient(circle at 10% 0%, rgba(255, 223, 150, 0.4) 0%, transparent 8%),
+    radial-gradient(circle at 25% 2%, rgba(255, 223, 150, 0.3) 0%, transparent 6%),
+    radial-gradient(circle at 40% 0%, rgba(255, 223, 150, 0.4) 0%, transparent 8%),
+    radial-gradient(circle at 55% 3%, rgba(255, 223, 150, 0.3) 0%, transparent 6%),
+    radial-gradient(circle at 70% 1%, rgba(255, 223, 150, 0.4) 0%, transparent 8%),
+    radial-gradient(circle at 85% 2%, rgba(255, 223, 150, 0.3) 0%, transparent 6%),
+    radial-gradient(circle at 95% 0%, rgba(255, 223, 150, 0.4) 0%, transparent 8%);
 }
